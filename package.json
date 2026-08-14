@@ -3,6 +3,7 @@
   "version": "1.0.0",
   "description": "Sistem Informasi Kinerja BLUD",
   "main": "main.js",
+  "type": "module",
   "scripts": {
     "start": "electron .",
     "build": "electron-builder",
@@ -20,21 +21,21 @@
       "index.html",
       "styles.css",
       "app.js",
-      "package.json"
+      "package.json",
+      "!dist"
     ],
     "mac": {
       "target": [
-        "dmg",
-        "zip"
+        {
+          "target": "dmg",
+          "arch": ["x64"]
+        }
       ],
-      "category": "public.app-category.business"
+      "category": "public.app-category.business",
+      "identity": null
     },
     "win": {
-      "target": [
-        "nsis",
-        "zip"
-      ],
-      "artifactName": "SIGAP-BLUD-Setup-${version}.exe"
+      "target": ["nsis"]
     },
     "nsis": {
       "oneClick": false,
@@ -45,6 +46,5 @@
   "devDependencies": {
     "electron": "^43.4.0",
     "electron-builder": "^24.13.3"
-  },
-  "type": "module"
+  }
 }

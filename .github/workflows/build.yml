@@ -1,15 +1,40 @@
 name: Build Aplikasi
-on: [push]
+on:
+  push:
+  workflow_dispatch:
+
 jobs:
   build:
     runs-on: ${{ matrix.os }}
     strategy:
+      fail-fast: false
       matrix:
         os: [windows-latest, macos-latest]
     steps:
-      - uses: actions/checkout@v3
-      - uses: actions/setup-node@v3
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
         with:
-          node-version: 18
-      - run: npm install
-      - run: npm run build
+          node-version: 20
+
+      - name: Install dependencies (strict dari lock file)
+        run: npm ci
+
+      - name: Build aplikasi
+        run: npm run build
+        env:
+          CSC_IDENTITY_AUTO_DISCOVERY: false
+
+      - name: Upload hasil build (Windows)
+        if: matrix.os == 'windows-latest'
+        uses: actions/upload-artifact@v4
+        with:
+          name: SIGAP-BLUD-Windows
+          path: dist/*.exe
+
+      - name: Upload hasil build (Mac)
+        if: matrix.os == 'macos-latest'
+        uses: actions/upload-artifact@v4
+        with:
+          name: SIGAP-BLUD-Mac
+          path: dist/*.dmg
