@@ -28,14 +28,18 @@
       "target": [
         {
           "target": "dmg",
-          "arch": ["x64"]
+          "arch": [
+            "x64"
+          ]
         }
       ],
       "category": "public.app-category.business",
       "identity": null
     },
     "win": {
-      "target": ["nsis"]
+      "target": [
+        "nsis"
+      ]
     },
     "nsis": {
       "oneClick": false,
@@ -45,6 +49,6 @@
   },
   "devDependencies": {
     "electron": "^43.4.0",
-    "electron-builder": "^24.13.3"
+    "electron-builder": "^25.1.8"
   }
 }
