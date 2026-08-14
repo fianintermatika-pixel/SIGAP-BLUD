@@ -1,0 +1,470 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>SIGAP BLUD — Sistem Informasi Kinerja BLUD</title>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fontsource/plus-jakarta-sans@5/400.css">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fontsource/plus-jakarta-sans@5/500.css">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fontsource/plus-jakarta-sans@5/600.css">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fontsource/plus-jakarta-sans@5/700.css">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fontsource/plus-jakarta-sans@5/800.css">
+<link rel="stylesheet" href="styles.css">
+</head>
+<body>
+<div id="licenseOverlay" style="display:none">
+  <div class="lic-card">
+    <img src="https://image.qwenlm.ai/public_source/7742f139-be62-4794-9281-21b5045794c7/1f05684b5-9305-49a4-823c-91b515d8f287.png" style="width:80px; margin-bottom:15px">
+    <h2>Aktivasi SIGAP BLUD</h2>
+    <p>Aplikasi belum diaktivasi. Silakan kirimkan <b>ID Perangkat</b> di bawah ini ke Admin untuk mendapatkan Kode Lisensi.</p>
+    <div class="hwid-box" id="hwidDisplay" onclick="copyHWID()">MEMUAT ID...</div>
+    <div class="copy-hint">Klik ID di atas untuk menyalin</div>
+    <input type="text" id="licInput" class="lic-field" placeholder="Masukkan Kode Aktivasi">
+    <button class="btn-activate" id="btnActivate">AKTIFKAN SEKARANG</button>
+    <p style="font-size:11px; margin-top:20px; color:#999">© 2024 SIGAP BLUD Premium</p>
+  </div>
+</div>
+
+<div class="overlay" id="overlay"></div>
+<div class="app">
+
+<!-- ================= SIDEBAR ================= -->
+<aside class="sidebar" id="sidebar">
+  <div class="brand">
+    <img src="https://image.qwenlm.ai/public_source/7742f139-be62-4794-9281-21b5045794c7/1f05684b5-9305-49a4-823c-91b515d8f287.png" alt="Logo">
+    <div><b>SIGAP BLUD</b><small>Sistem Informasi Kinerja BLUD</small></div>
+  </div>
+  <nav>
+    <div class="nav-group">Ringkasan</div>
+    <a class="nav-link" data-nav="dash" href="#"><span class="ni">📊</span><span class="nl">Dashboard</span></a>
+
+    <div class="nav-group">⚙️ Master Data <em>Administrator</em></div>
+    <a class="nav-link" data-nav="profil" data-master="1" href="#"><span class="ni">🏛️</span><span class="nl">Profil Instansi</span></a>
+    <a class="nav-link" data-nav="pegawai" data-master="1" href="#"><span class="ni">👥</span><span class="nl">Master Pegawai</span></a>
+    <a class="nav-link" data-nav="indikator" data-master="1" href="#"><span class="ni">🎯</span><span class="nl">Master Indikator Kinerja</span></a>
+
+    <div class="nav-group">📝 Input Laporan Kinerja</div>
+    <a class="nav-link" data-nav="bab1" href="#"><span class="ni">I</span><span class="nl">BAB I — Pendahuluan</span><span class="pct" id="pct-bab1">0%</span></a>
+    <a class="nav-link" data-nav="bab2" href="#"><span class="ni">II</span><span class="nl">BAB II — Gambaran Umum</span><span class="pct" id="pct-bab2">0%</span></a>
+    <a class="nav-link" data-nav="bab3" href="#"><span class="ni">III</span><span class="nl">BAB III — Renstra</span><span class="pct" id="pct-bab3">0%</span></a>
+    <a class="nav-link" data-nav="bab4" href="#"><span class="ni">IV</span><span class="nl">BAB IV — Pelaporan Kinerja</span><span class="pct" id="pct-bab4">0%</span></a>
+    <a class="nav-link" data-nav="bab5" href="#"><span class="ni">V</span><span class="nl">BAB V — Analisa Kinerja</span><span class="pct" id="pct-bab5">0%</span></a>
+    <a class="nav-link" data-nav="bab6" href="#"><span class="ni">VI</span><span class="nl">BAB VI &amp; Lampiran</span><span class="pct" id="pct-bab6">0%</span></a>
+
+    <div class="nav-group">🖨️ Output &amp; Laporan</div>
+    <a class="nav-link" data-nav="preview" href="#"><span class="ni">👁️</span><span class="nl">Pratinjau Dokumen</span></a>
+    <a class="nav-link" data-nav="export" href="#"><span class="ni">⬇️</span><span class="nl">Cetak &amp; Ekspor</span></a>
+  </nav>
+  <div class="side-foot"><button id="btnReset">↺ Reset Data Demo</button></div>
+</aside>
+
+<!-- ================= MAIN ================= -->
+<div class="main">
+<header class="topbar">
+  <button id="hamburger">☰</button>
+  <div class="crumb"><small id="topCrumb">Ringkasan</small><h1 id="topTitle">Dashboard</h1></div>
+  <div class="top-right">
+    <span class="saved-chip" id="savedChip">● Draft tersimpan</span>
+    <span class="inst-chip"><b id="instNameChip">—</b><em id="jenisBadge" class="b-pus">Puskesmas</em></span>
+    <select id="roleSel" title="Mode peran">
+      <option value="admin">👑 Administrator</option>
+      <option value="operator">🧑‍💻 Operator Instansi</option>
+    </select>
+  </div>
+</header>
+
+<main id="content">
+
+<!-- ============ DASHBOARD ============ -->
+<section class="page" data-page="dash">
+  <div class="hero">
+    <div>
+      <h2 id="dashInstName">—</h2>
+      <p>Selamat datang! Susun Laporan Kinerja BLUD Anda bab demi bab. Field spesifik (Demografis, Jejaring/UKBM, Mutu Klinik) menyesuaikan jenis instansi yang dipilih pada Profil Instansi.</p>
+      <div style="display:flex;gap:10px;flex-wrap:wrap">
+        <button class="btn amber" id="dashNext">✍️ Lanjut Mengisi</button>
+        <button class="btn ghost" data-nav="preview" style="background:rgba(255,255,255,.12);color:#fff;border:none">👁️ Pratinjau Dokumen</button>
+      </div>
+    </div>
+    <img src="https://image.qwenlm.ai/public_source/7742f139-be62-4794-9281-21b5045794c7/103cc754f-aa56-4cbc-ba45-d69caa5aa85c.png" alt="Ilustrasi">
+  </div>
+
+  <div class="stats">
+    <div class="stat"><div class="s-ico" style="background:var(--pri-soft)">📈</div><b id="statOverall">0%</b><small>Progres Penyusunan Laporan</small></div>
+    <div class="stat"><div class="s-ico" style="background:var(--blue-soft)">👥</div><b id="statPegawai">0</b><small>Data Pegawai Terdaftar</small></div>
+    <div class="stat"><div class="s-ico" style="background:var(--acc-soft)">🎯</div><b id="statInd">0</b><small>Indikator SPM + INM</small></div>
+    <div class="stat"><div class="s-ico" style="background:#e7f6ef">✅</div><b id="statSpmAvg">–</b><small>Rata-rata Capaian SPM</small></div>
+  </div>
+
+  <div class="card">
+    <h3><span class="hico">🗂️</span>Progres per BAB</h3>
+    <p class="desc">Klik “Buka” untuk melanjutkan pengisian masing-masing bab.</p>
+    <div id="dashChapters"></div>
+  </div>
+</section>
+
+<!-- ============ PROFIL ============ -->
+<section class="page" data-page="profil">
+  <div class="grid2" style="align-items:start">
+    <div class="card">
+      <h3><span class="hico">🏛️</span>Profil Instansi</h3>
+      <p class="desc">Data fundamental instansi. Pilihan <b>jenis BLUD</b> mengontrol field spesifik pada bab-bab berikutnya.</p>
+      <div class="field"><label>Nama Instansi *</label><input data-bind="profil.nama" placeholder="cth: UPTD Puskesmas Sehat Mandiri"></div>
+      <label class="field" style="margin-bottom:6px"><label>Jenis BLUD</label></label>
+      <div class="jenis-pick">
+        <label class="jp"><input type="radio" name="jenisBLUD" data-bind="profil.jenis" value="puskesmas">
+          <div class="jp-card"><div class="jp-ico">🏥</div><b>Puskesmas</b><small>Mengaktifkan field Demografis, Jejaring/Jaringan/Lintas Sektor, dan Sarana UKBM.</small></div></label>
+        <label class="jp"><input type="radio" name="jenisBLUD" data-bind="profil.jenis" value="rsud">
+          <div class="jp-card"><div class="jp-ico">🏨</div><b>RSUD</b><small>Menambahkan perspektif “Mutu Klinik” pada BAB IV Kinerja Non-Keuangan.</small></div></label>
+      </div>
+      <div class="grid2">
+        <div class="field"><label>Provinsi</label><input data-bind="profil.provinsi"></div>
+        <div class="field"><label>Kabupaten / Kota</label><input data-bind="profil.kabupaten"></div>
+        <div class="field"><label>Kecamatan</label><input data-bind="profil.kecamatan"></div>
+        <div class="field"><label>Desa / Kelurahan</label><input data-bind="profil.desa"></div>
+      </div>
+      <div class="field"><label>Alamat Lengkap</label><input data-bind="profil.alamat"></div>
+      <div class="grid2">
+        <div class="field"><label>Nama Kepala Instansi</label><input data-bind="profil.kepala"></div>
+        <div class="field"><label>NIP</label><input data-bind="profil.nip"></div>
+        <div class="field"><label>Telepon</label><input data-bind="profil.telepon"></div>
+        <div class="field"><label>Email</label><input data-bind="profil.email"></div>
+      </div>
+      <button class="btn primary" data-save>💾 Simpan Profil</button>
+    </div>
+    <div>
+      <div class="card">
+        <h3><span class="hico">🪪</span>Kartu Instansi</h3>
+        <div style="display:flex;gap:14px;align-items:center;margin-top:10px">
+          <img src="https://image.qwenlm.ai/public_source/7742f139-be62-4794-9281-21b5045794c7/1f05684b5-9305-49a4-823c-91b515d8f287.png" style="width:64px;border-radius:50%;background:#fff;border:1px solid var(--line);padding:3px">
+          <div><b id="pvNama" style="font-size:15px">—</b><br><span id="pvJenis" class="chip b-pus">Puskesmas</span></div>
+        </div>
+        <p id="pvAlamat" style="color:var(--muted);font-size:12.5px;margin-top:10px"></p>
+        <p id="pvKepala" style="color:var(--muted);font-size:12.5px;margin-top:4px"></p>
+      </div>
+      <div class="card">
+        <h3><span class="hico">🗺️</span>Letak Geografis</h3>
+        <svg viewBox="0 0 400 190" style="width:100%;border-radius:12px;margin-top:8px">
+          <rect width="400" height="190" fill="#e8f2ef"/>
+          <path d="M0,140 C80,110 140,170 220,130 S340,90 400,120 L400,190 L0,190 Z" fill="#cfe5df"/>
+          <path d="M30,0 C60,60 20,120 60,190" stroke="#a9cfc7" stroke-width="3" fill="none"/>
+          <path d="M0,60 C90,80 200,40 400,70" stroke="#a9cfc7" stroke-width="3" fill="none"/>
+          <g><circle cx="200" cy="88" r="26" fill="#0e7a6d" opacity=".15"/><circle cx="200" cy="88" r="12" fill="#0e7a6d" opacity=".25"/>
+          <path d="M200,58 c-13,0 -22,10 -22,22 c0,16 22,38 22,38 s22,-22 22,-38 c0,-12 -9,-22 -22,-22z" fill="#e8912d"/>
+          <circle cx="200" cy="80" r="7" fill="#fff"/></g>
+          <text x="200" y="140" text-anchor="middle" font-size="11" fill="#0a5c53" font-weight="bold" id="mapLabel">Lokasi Instansi</text>
+        </svg>
+        <p class="hint" style="color:var(--muted);font-size:11px;margin-top:8px">Pratinjau peta mengikuti wilayah administratif pada form.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ PEGAWAI ============ -->
+<section class="page" data-page="pegawai">
+  <div class="card">
+    <h3><span class="hico">👥</span>Master Pegawai &amp; SDM</h3>
+    <p class="desc">Data SDM dan struktur organisasi. Bagan struktur tersusun otomatis dari jabatan.</p>
+    <div class="grid-tools">
+      <input class="search" id="searchPegawai" placeholder="🔍 Cari nama / jabatan / unit…">
+      <button class="btn primary small" data-addrow="pegawai">＋ Tambah Pegawai</button>
+    </div>
+    <div class="gridwrap" data-grid="pegawai"></div>
+  </div>
+  <div class="card">
+    <h3><span class="hico">🌳</span>Bagan Struktur Organisasi (otomatis)</h3>
+    <div class="org" id="orgChart" style="margin-top:14px"></div>
+  </div>
+</section>
+
+<!-- ============ INDIKATOR ============ -->
+<section class="page" data-page="indikator">
+  <div class="card">
+    <h3><span class="hico">🎯</span>Master Indikator — SPM <span class="note warn">Standar Pelayanan Minimal</span></h3>
+    <p class="desc">Target SPM sesuai Permenkes. Perubahan otomatis tersinkron ke tabel BAB IV &amp; Lampiran.</p>
+    <div class="grid-tools"><span class="chip teal" id="spmCount">0 indikator</span><button class="btn primary small" data-addrow="indSpm">＋ Tambah Indikator SPM</button></div>
+    <div class="gridwrap" data-grid="indSpm"></div>
+  </div>
+  <div class="card">
+    <h3><span class="hico">🏅</span>Master Indikator — INM <span class="note warn">Indikator Nasional Mutu</span></h3>
+    <p class="desc">Target INM sesuai Kepmenkes tentang Indikator Nasional Mutu.</p>
+    <div class="grid-tools"><span class="chip teal" id="inmCount">0 indikator</span><button class="btn primary small" data-addrow="indInm">＋ Tambah Indikator INM</button></div>
+    <div class="gridwrap" data-grid="indInm"></div>
+  </div>
+</section>
+
+<!-- ============ BAB I ============ -->
+<section class="page" data-page="bab1">
+  <div class="grid2">
+    <div class="card"><h3><span class="hico">📖</span>Latar Belakang &amp; Pengertian</h3>
+      <div class="field"><label>Latar Belakang</label><textarea data-bind="bab1.latar" placeholder="Uraikan latar belakang penyusunan laporan kinerja BLUD…"></textarea></div>
+      <div class="field"><label>Pengertian</label><textarea data-bind="bab1.pengertian" placeholder="Definisi BLUD, fleksibilitas pengelolaan keuangan, dll…"></textarea></div>
+    </div>
+    <div class="card"><h3><span class="hico">🎯</span>Tujuan &amp; Sasaran</h3>
+      <div class="field"><label>Tujuan</label><textarea data-bind="bab1.tujuan"></textarea></div>
+      <div class="field"><label>Sasaran</label><textarea data-bind="bab1.sasaran"></textarea></div>
+    </div>
+    <div class="card"><h3><span class="hico">🧭</span>Manfaat &amp; Ruang Lingkup</h3>
+      <div class="field"><label>Manfaat</label><textarea data-bind="bab1.manfaat"></textarea></div>
+      <div class="field"><label>Ruang Lingkup</label><textarea data-bind="bab1.ruang"></textarea></div>
+    </div>
+    <div class="card"><h3><span class="hico">⚖️</span>Landasan Hukum</h3>
+      <div class="field"><label>Landasan Hukum</label><textarea data-bind="bab1.hukum" placeholder="cth:&#10;1. UU No. 23/2014 tentang Pemerintahan Daerah&#10;2. PP No. 54/2017 tentang Badan Layanan Umum Daerah&#10;3. Permendagri No. 79/2018 tentang BLUD"></textarea></div>
+      <p class="hint" style="color:var(--muted);font-size:11px">Tulis satu peraturan per baris agar rapi pada dokumen.</p>
+    </div>
+  </div>
+  <button class="btn primary" data-save>💾 Simpan BAB I</button>
+</section>
+
+<!-- ============ BAB II ============ -->
+<section class="page" data-page="bab2">
+  <div class="card"><h3><span class="hico">🗺️</span>Kondisi Geografis &amp; Demografis</h3>
+    <div class="field"><label>Kondisi Geografis</label><textarea data-bind="bab2.geo" placeholder="Batas wilayah, jarak ke kabupaten/provinsi, topografi…"></textarea></div>
+    <div data-only="puskesmas">
+      <div class="field"><label>Kondisi Demografis</label> <span class="note pus">Khusus Puskesmas</span><textarea data-bind="bab2.demo" placeholder="Jumlah penduduk, kepadatan, mata pencaharian, sasaran program…"></textarea></div>
+    </div>
+  </div>
+  <div class="card"><h3><span class="hico">🏢</span>Informasi Umum, Tupoksi &amp; Struktur Organisasi</h3>
+    <div class="grid2">
+      <div class="field"><label>Informasi Umum</label><textarea data-bind="bab2.info"></textarea></div>
+      <div class="field"><label>Tupoksi</label><textarea data-bind="bab2.tupoksi"></textarea></div>
+    </div>
+    <div class="field"><label>Struktur Organisasi</label><textarea data-bind="bab2.struktur" placeholder="Uraian struktur organisasi sesuai peraturan yang berlaku…"></textarea></div>
+    <div data-only="puskesmas">
+      <p style="font-weight:800;font-size:12px;margin:6px 0 10px">Data Jejaring, Jaringan &amp; Lintas Sektor <span class="note pus">Khusus Puskesmas</span></p>
+      <div class="grid3">
+        <div class="field"><label>Jejaring</label><textarea data-bind="bab2.jejaring" placeholder="Pustu, Poskesdes, Polindes…"></textarea></div>
+        <div class="field"><label>Jaringan</label><textarea data-bind="bab2.jaringan" placeholder="Puskesmas pembantu, puskesmas keliling…"></textarea></div>
+        <div class="field"><label>Lintas Sektor</label><textarea data-bind="bab2.linsek" placeholder="Kecamatan, desa, TP-PKK, sekolah…"></textarea></div>
+      </div>
+    </div>
+  </div>
+  <div class="card"><h3><span class="hico">💊</span>Pelayanan &amp; Ketersediaan Obat</h3>
+    <div class="field"><label>Uraian Pelayanan</label><textarea data-bind="bab2.pelayanan" placeholder="Jenis layanan: rawat jalan, KIA, gawat darurat, laboratorium…"></textarea></div>
+    <div class="grid-tools"><span class="chip teal">Grid Ketersediaan Obat</span><button class="btn primary small" data-addrow="obat">＋ Tambah Obat</button></div>
+    <div class="gridwrap" data-grid="obat"></div>
+  </div>
+  <div class="card"><h3><span class="hico">🏗️</span>Sarana &amp; Prasarana</h3>
+    <div class="grid-tools"><span class="chip teal">Grid Sarana Prasarana</span><button class="btn primary small" data-addrow="sarpras">＋ Tambah Sarana</button></div>
+    <div class="gridwrap" data-grid="sarpras"></div>
+    <div data-only="puskesmas" style="margin-top:14px">
+      <div class="field"><label>Sarana UKBM (Upaya Kesehatan Berbasis Masyarakat)</label> <span class="note pus">Otomatis hanya untuk Puskesmas</span><textarea data-bind="bab2.ukbm" placeholder="Jumlah Posyandu, Posbindu, Poskesdes, kader aktif…"></textarea></div>
+    </div>
+  </div>
+  <div class="card"><h3><span class="hico">💼</span>Sumber Daya (SDM &amp; Finansial)</h3>
+    <div class="grid-tools"><span class="chip teal">Ringkasan SDM</span><button class="btn primary small" data-addrow="sdm">＋ Tambah Baris SDM</button></div>
+    <div class="gridwrap" data-grid="sdm"></div>
+    <div class="grid2" style="margin-top:16px">
+      <div class="field"><label>Anggaran dari APBD (Rp)</label><input type="number" data-bind="bab2.fin_apbd"></div>
+      <div class="field"><label>Pendapatan BLUD (Rp)</label><input type="number" data-bind="bab2.fin_pendapatan"></div>
+      <div class="field"><label>Nilai Aset BLUD (Rp)</label><input type="number" data-bind="bab2.fin_blud"></div>
+      <div class="field"><label>Pendapatan Lain-lain yang Sah (Rp)</label><input type="number" data-bind="bab2.fin_lain"></div>
+    </div>
+  </div>
+  <button class="btn primary" data-save>💾 Simpan BAB II</button>
+</section>
+
+<!-- ============ BAB III ============ -->
+<section class="page" data-page="bab3">
+  <div class="card"><h3><span class="hico">🌟</span>Visi, Misi &amp; Tata Nilai</h3>
+    <div class="field"><label>Visi</label><textarea data-bind="bab3.visi"></textarea></div>
+    <div class="grid-tools"><span class="chip teal">Butir Misi</span><button class="btn primary small" data-addrow="misi">＋ Tambah Misi</button></div>
+    <div class="gridwrap" data-grid="misi"></div>
+    <div class="field" style="margin-top:14px"><label>Tata Nilai</label><textarea data-bind="bab3.nilai" placeholder="cth: RAMAH — Responsif, Akuntabel, Mandiri, Amanah, Harmonis"></textarea></div>
+  </div>
+  <div class="card"><h3><span class="hico">🧭</span>Tujuan &amp; Sasaran Strategis</h3>
+    <div class="field"><label>Tujuan Strategis</label><textarea data-bind="bab3.tujuan"></textarea></div>
+    <div class="grid-tools"><span class="chip teal">Sasaran Strategis</span><button class="btn primary small" data-addrow="sasaran3">＋ Tambah Sasaran</button></div>
+    <div class="gridwrap" data-grid="sasaran3"></div>
+  </div>
+  <div class="card"><h3><span class="hico">⚠️</span>Identifikasi Masalah &amp; Isu Strategis</h3>
+    <div class="grid2">
+      <div class="field"><label>Identifikasi Masalah</label><textarea data-bind="bab3.masalah"></textarea></div>
+      <div class="field"><label>Isu Strategis</label><textarea data-bind="bab3.isu"></textarea></div>
+    </div>
+  </div>
+  <div class="card"><h3><span class="hico">📜</span>Perjanjian Kinerja &amp; Program/Kegiatan</h3>
+    <div class="grid-tools"><span class="chip teal">Perjanjian Kinerja</span><button class="btn primary small" data-addrow="perjakin">＋ Tambah Baris</button></div>
+    <div class="gridwrap" data-grid="perjakin"></div>
+    <div class="grid-tools" style="margin-top:18px"><span class="chip blue">Program / Kegiatan</span><button class="btn primary small" data-addrow="program">＋ Tambah Program</button></div>
+    <div class="gridwrap" data-grid="program"></div>
+  </div>
+  <button class="btn primary" data-save>💾 Simpan BAB III</button>
+</section>
+
+<!-- ============ BAB IV ============ -->
+<section class="page" data-page="bab4">
+  <div class="tabbar">
+    <button data-tabbtn="nonkeu" class="on">📈 Kinerja Non-Keuangan</button>
+    <button data-tabbtn="keu">💰 Kinerja Keuangan</button>
+    <button data-tabbtn="lain">🏅 SPM &amp; INM</button>
+  </div>
+
+  <div class="tabpanel on" data-tabpanel="nonkeu">
+    <div class="card"><h3><span class="hico">🌱</span>Perspektif Pertumbuhan &amp; Pembelajaran</h3>
+      <div class="grid-tools"><span></span><button class="btn primary small" data-addrow="nppp">＋ Indikator</button></div>
+      <div class="gridwrap" data-grid="nppp"></div></div>
+    <div class="card"><h3><span class="hico">⚙️</span>Perspektif Proses Layanan Internal</h3>
+      <div class="grid-tools"><span></span><button class="btn primary small" data-addrow="npil">＋ Indikator</button></div>
+      <div class="gridwrap" data-grid="npil"></div></div>
+    <div class="card"><h3><span class="hico">❤️</span>Perspektif Pelanggan <small style="color:var(--muted);font-weight:600">(Mutu, Kepedulian Masyarakat &amp; Lingkungan)</small></h3>
+      <div class="grid-tools"><span></span><button class="btn primary small" data-addrow="npel">＋ Indikator</button></div>
+      <div class="gridwrap" data-grid="npel"></div></div>
+    <div data-only="rsud">
+      <div class="card"><h3><span class="hico">🏥</span>Perspektif Mutu Klinik <span class="note rsud">Khusus RSUD</span></h3>
+        <p class="desc">Indikator mutu klinis: infeksi, keselamatan pasien, visite spesialis, dll.</p>
+        <div class="grid-tools"><span></span><button class="btn primary small" data-addrow="nmutu">＋ Indikator</button></div>
+        <div class="gridwrap" data-grid="nmutu"></div></div>
+    </div>
+  </div>
+
+  <div class="tabpanel" data-tabpanel="keu">
+    <div class="card"><h3><span class="hico">💵</span>Aspek Perolehan Hasil Usaha</h3>
+      <div class="grid3">
+        <div class="field"><label>Target Pendapatan (Rp)</label><input type="number" data-bind="bab4.keu.pend_target"></div>
+        <div class="field"><label>Realisasi Pendapatan (Rp)</label><input type="number" data-bind="bab4.keu.pend_real"></div>
+        <div class="field"><label>Realisasi Beban (Rp)</label><input type="number" data-bind="bab4.keu.beban_real"></div>
+      </div>
+      <div class="keu-line">Surplus / (Defisit) <b id="keuSurplus">Rp 0</b></div>
+      <div class="keu-line">Capaian Pendapatan <span class="meter" style="width:140px"><div id="keuCapBar" style="width:0%"></div></span> <b id="keuCapTxt">–</b></div>
+    </div>
+    <div class="card"><h3><span class="hico">🧾</span>Aspek Kewajiban (Jangka Pendek &amp; Seluruh)</h3>
+      <div class="grid2">
+        <div class="field"><label>Kewajiban Jangka Pendek (Rp)</label><input type="number" data-bind="bab4.keu.kew_pendek"></div>
+        <div class="field"><label>Kewajiban Seluruhnya (Rp)</label><input type="number" data-bind="bab4.keu.kew_seluruh"></div>
+      </div>
+      <div class="keu-line">Proporsi kewajiban jangka pendek terhadap seluruh kewajiban <b id="keuRasio">–</b></div>
+    </div>
+    <div class="card"><h3><span class="hico">🤝</span>Aspek Penerimaan Jasa</h3>
+      <div class="grid3">
+        <div class="field"><label>Jasa Layanan (Rp)</label><input type="number" data-bind="bab4.keu.jasa_layanan"></div>
+        <div class="field"><label>Klaim BPJS / Asuransi (Rp)</label><input type="number" data-bind="bab4.keu.klaim_bpjs"></div>
+        <div class="field"><label>Penerimaan Jasa Lain (Rp)</label><input type="number" data-bind="bab4.keu.jasa_lain"></div>
+      </div>
+      <div class="keu-line">Total Penerimaan Jasa <b id="keuJasa">Rp 0</b></div>
+    </div>
+  </div>
+
+  <div class="tabpanel" data-tabpanel="lain">
+    <div class="card"><h3><span class="hico">🎯</span>Form Capaian SPM</h3>
+      <p class="desc">Grid dinamis — capaian dihitung otomatis. Data ini ditarik ke Lampiran (BAB VI).</p>
+      <div class="grid-tools"><span></span><button class="btn primary small" data-addrow="spm">＋ Baris SPM</button></div>
+      <div class="gridwrap" data-grid="spm"></div></div>
+    <div class="card"><h3><span class="hico">🏅</span>Form Capaian INM</h3>
+      <div class="grid-tools"><span></span><button class="btn primary small" data-addrow="inm">＋ Baris INM</button></div>
+      <div class="gridwrap" data-grid="inm"></div></div>
+  </div>
+  <button class="btn primary" data-save>💾 Simpan BAB IV</button>
+</section>
+
+<!-- ============ BAB V ============ -->
+<section class="page" data-page="bab5">
+  <div class="card"><h3><span class="hico">🚨</span>Identifikasi &amp; Prioritas Masalah (Metode USG)</h3>
+    <p class="desc">Skor 1–5 untuk Urgency, Seriousness, Growth. Total &amp; peringkat dihitung otomatis.</p>
+    <div class="grid-tools"><span></span><button class="btn primary small" data-addrow="usg">＋ Tambah Masalah</button></div>
+    <div class="gridwrap" data-grid="usg"></div>
+  </div>
+
+  <div class="card"><h3><span class="hico">🐟</span>Analisa Akar Penyebab</h3>
+    <div class="tabbar">
+      <button data-tabbtn="fish" class="on">🐟 Fishbone (6M)</button>
+      <button data-tabbtn="why">🧩 Matriks 5 Why</button>
+    </div>
+    <div class="tabpanel on" data-tabpanel="fish">
+      <div class="fb">
+        <div class="fb-row fb-top">
+          <div class="fb-cat"><h5>👤 SDM (Man)</h5><textarea data-bind="bab5.fishbone.sdm"></textarea></div>
+          <div class="fb-cat"><h5>📐 Metode (Method)</h5><textarea data-bind="bab5.fishbone.metode"></textarea></div>
+          <div class="fb-cat"><h5>🏗️ Sarana (Machine)</h5><textarea data-bind="bab5.fishbone.sarana"></textarea></div>
+        </div>
+        <div class="fb-axis">
+          <div class="fb-tail"></div><div class="fb-spine"></div>
+          <div class="fb-head"><small>Masalah Utama</small><input data-bind="bab5.fishbone.problem" placeholder="Tuliskan masalah utama…"></div>
+        </div>
+        <div class="fb-row fb-bot">
+          <div class="fb-cat"><h5>💰 Dana (Money)</h5><textarea data-bind="bab5.fishbone.dana"></textarea></div>
+          <div class="fb-cat"><h5>🌍 Lingkungan</h5><textarea data-bind="bab5.fishbone.lingkungan"></textarea></div>
+          <div class="fb-cat"><h5>📜 Kebijakan</h5><textarea data-bind="bab5.fishbone.kebijakan"></textarea></div>
+        </div>
+      </div>
+    </div>
+    <div class="tabpanel" data-tabpanel="why">
+      <div class="grid-tools"><span></span><button class="btn primary small" data-addrow="why">＋ Baris Analisa</button></div>
+      <div class="gridwrap" data-grid="why"></div>
+    </div>
+  </div>
+
+  <div class="card"><h3><span class="hico">📆</span>Perbandingan Kinerja Year-on-Year (YoY)</h3>
+    <div class="grid-tools"><span></span><button class="btn primary small" data-addrow="yoy">＋ Tambah Tahun</button></div>
+    <div class="gridwrap" data-grid="yoy"></div>
+  </div>
+
+  <div class="card"><h3><span class="hico">🛠️</span>Pemecahan Masalah</h3>
+    <div class="grid-tools"><span></span><button class="btn primary small" data-addrow="solusi">＋ Tambah Solusi</button></div>
+    <div class="gridwrap" data-grid="solusi"></div>
+  </div>
+  <button class="btn primary" data-save>💾 Simpan BAB V</button>
+</section>
+
+<!-- ============ BAB VI ============ -->
+<section class="page" data-page="bab6">
+  <div class="card"><h3><span class="hico">🏁</span>Kesimpulan &amp; Saran</h3>
+    <div class="grid2">
+      <div class="field"><label>Kesimpulan</label><textarea data-bind="bab6.kesimpulan" style="min-height:160px"></textarea></div>
+      <div class="field"><label>Saran</label><textarea data-bind="bab6.saran" style="min-height:160px"></textarea></div>
+    </div>
+  </div>
+  <div class="card"><h3><span class="hico">📎</span>Lampiran — Upload &amp; Generate Otomatis</h3>
+    <p class="desc">Tombol <b>Generate</b> otomatis menarik data capaian SPM &amp; INM dari BAB IV menjadi tabel sesuai format Permenkes.</p>
+    <div class="dropzone" id="dropzone">📤 Klik untuk upload berkas lampiran (PDF/Excel/Foto)<input type="file" id="fileLamp" multiple hidden></div>
+    <div id="uploadList" style="margin-top:10px"></div>
+    <div style="margin-top:14px;display:flex;gap:10px;flex-wrap:wrap">
+      <button class="btn amber" id="btnGenLamp">⚡ Generate Lampiran dari BAB IV</button>
+      <button class="btn primary" data-save>💾 Simpan BAB VI</button>
+    </div>
+    <div id="lampiranOut" style="margin-top:22px"></div>
+  </div>
+</section>
+
+<!-- ============ PREVIEW ============ -->
+<section class="page" data-page="preview">
+  <div class="grid-tools no-print">
+    <span class="chip teal">Pratinjau menyeluruh BAB I — Lampiran</span>
+    <div style="display:flex;gap:10px">
+      <button class="btn primary" id="btnPrint">🖨️ Cetak / Simpan PDF</button>
+      <button class="btn amber" id="btnWordTop">📄 Unduh Word</button>
+    </div>
+  </div>
+  <div class="sheet" id="reportSheet"></div>
+</section>
+
+<!-- ============ EXPORT ============ -->
+<section class="page" data-page="export">
+  <div class="grid2">
+    <div class="card">
+      <h3><span class="hico">⚙️</span>Opsi Dokumen</h3>
+      <div class="field"><label style="text-transform:none;display:flex;gap:8px;align-items:center"><input type="checkbox" id="optCover" checked> Sertakan Halaman Sampul (Cover)</label></div>
+      <div class="field"><label style="text-transform:none;display:flex;gap:8px;align-items:center"><input type="checkbox" id="optToc" checked> Sertakan Daftar Isi</label></div>
+      <div class="field"><label style="text-transform:none;display:flex;gap:8px;align-items:center"><input type="checkbox" id="optLampiran" checked> Sertakan Lampiran SPM &amp; INM (format Permenkes)</label></div>
+      <p class="hint" style="color:var(--muted);font-size:11.5px">Nama berkas: <b id="fileName">Laporan-Kinerja-BLUD</b></p>
+    </div>
+    <div class="card">
+      <h3><span class="hico">⬇️</span>Unduh Laporan Akhir</h3>
+      <p class="desc">Dokumen dirangkai otomatis dari seluruh isian BAB I s.d. Lampiran.</p>
+      <div style="display:flex;flex-direction:column;gap:12px;margin-top:6px">
+        <button class="btn primary" id="btnPdf">🖨️ Cetak / Unduh PDF</button>
+        <button class="btn amber" id="btnWord">📄 Unduh Microsoft Word (.docx)</button>
+        <button class="btn ghost" data-nav="preview">👁️ Lihat Pratinjau Terlebih Dahulu</button>
+      </div>
+    </div>
+  </div>
+</section>
+
+</main>
+</div>
+</div>
+<div class="toast-wrap" id="toastWrap"></div>
+
+<script src="app.js"></script>
+</body>
+</html>
