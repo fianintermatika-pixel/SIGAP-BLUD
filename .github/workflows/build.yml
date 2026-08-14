@@ -24,6 +24,7 @@ jobs:
         run: npm run build
         env:
           CSC_IDENTITY_AUTO_DISCOVERY: false
+          EP_PUBLISH: never
 
       - name: Upload hasil build (Windows)
         if: matrix.os == 'windows-latest'
